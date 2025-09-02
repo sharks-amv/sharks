@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How We Work - Dr. Salunke</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            background: linear-gradient(135deg, #f5f3ff 0%, #e0e7ff 100%);
+            min-height: 100vh;
+        }
+
+        /* Navbar */
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 5%;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 20px rgba(100, 26, 169, 0.1);
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: bold;
+            background: linear-gradient(45deg, #6419a9, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #6419a9;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            background: linear-gradient(45deg, #6419a9, #8b5cf6);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(100, 26, 169, 0.3);
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, #6419a9 0%, #8b5cf6 100%);
+            color: white;
+            text-align: center;
+            padding: 6rem 2rem 4rem;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+        }
+
+        /* Process Steps */
+        .process-section {
+            background: white;
+            border-radius: 20px;
+            padding: 3rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 40px rgba(100, 26, 169, 0.1);
+        }
+
+        .section-title {
+            color: #6419a9;
+            font-size: 2.2rem;
+            margin-bottom: 2rem;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .steps-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .step-card {
+            background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+            border-radius: 15px;
+            padding: 2rem;
+            text-align: center;
+            position: relative;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .step-card:hover {
+            transform: translateY(-5px);
+            border: 2px solid #8b5cf6;
+            box-shadow: 0 10px 30px rgba(100, 26, 169, 0.2);
+        }
+
+        .step-number {
+            background: linear-gradient(45deg, #6419a9, #8b5cf6);
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin: 0 auto 1rem;
+        }
+
+        .step-title {
+            color: #6419a9;
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .step-description {
+            color: #4a5568;
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+
+        /* Features Grid */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .feature-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 0 5px 20px rgba(100, 26, 169, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(100, 26, 169, 0.15);
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-title {
+            color: #6419a9;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .feature-text {
+            color: #4a5568;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        /* Technology Section */
+        .tech-section {
+            background: linear-gradient(135deg, #6419a9, #8b5cf6);
+            color: white;
+            border-radius: 20px;
+            padding: 3rem;
+            margin: 2rem 0;
+            text-align: center;
+        }
+
+        .tech-title {
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+        }
+
+        .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .tech-item {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 10px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .tech-item:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-3px);
+        }
+
+        .tech-item h4 {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .tech-item p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                gap: 1rem;
+                padding: 1rem;
+            }
+
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .container {
+                padding: 2rem 1rem;
+            }
+
+            .process-section {
+                padding: 2rem;
+            }
+
+            .steps-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="logo">Dr.Salunke</div>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="who-we-are.html">Who we are</a></li>
+            <li><a href="how-we-work.html" class="active">How we work</a></li>
+            <li><a href="work-with-us.html">Work with us</a></li>
+            <li><a href="investors.html">Investors</a></li>
+            <li><a href="contact.html">Contact Us</a></li>
+        </ul>
+    </nav>
+
+    <section class="hero">
+        <h1>How We Work</h1>
+        <p>Streamlined processes and cutting-edge technology for exceptional healthcare delivery</p>
+    </section>
+
+    <div class="container">
+        <div class="process-section">
+            <h2 class="section-title">Our Patient Journey</h2>
+            <div class="steps-container">
+                <div class="step-card">
+                    <div class="step-number">1</div>
+                    <h3 class="step-title">Initial Consultation</h3>
+                    <p class="step-description">
+                        Comprehensive health assessment with our medical experts. We listen to your concerns, review
+                        your medical history, and understand your health goals.
+                    </p>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">2</div>
+                    <h3 class="step-title">Diagnostic Evaluation</h3>
+                    <p class="step-description">
+                        Advanced diagnostic testing using state-of-the-art equipment. Quick, accurate results to ensure
+                        precise diagnosis and effective treatment planning.
+                    </p>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">3</div>
+                    <h3 class="step-title">Personalized Treatment</h3>
+                    <p class="step-description">
+                        Customized treatment plans tailored to your specific needs. Evidence-based medicine combined
+                        with personalized care for optimal outcomes.
+                    </p>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">4</div>
+                    <h3 class="step-title">Ongoing Care</h3>
+                    <p class="step-description">
+                        Continuous monitoring and support throughout your health journey. Regular follow-ups and
+                        adjustments to ensure lasting wellness.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="process-section">
+            <h2 class="section-title">Our Core Services</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🏥</div>
+                    <h3 class="feature-title">Emergency Care</h3>
+                    <p class="feature-text">24/7 emergency services with rapid response times and expert critical care
+                        management.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔬</div>
+                    <h3 class="feature-title">Laboratory Services</h3>
+                    <p class="feature-text">Advanced diagnostic laboratory with quick turnaround times and accurate
+                        results.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🩺</div>
+                    <h3 class="feature-title">Specialist Consultations</h3>
+                    <p class="feature-text">Access to over 25 medical specialties under one roof for comprehensive care.
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🏃‍♀️</div>
+                    <h3 class="feature-title">Preventive Care</h3>
+                    <p class="feature-text">Health screening programs and wellness initiatives to prevent diseases
+                        before they start.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">💊</div>
+                    <h3 class="feature-title">Pharmacy Services</h3>
+                    <p class="feature-text">In-house pharmacy with prescription management and medication counseling
+                        services.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🏠</div>
+                    <h3 class="feature-title">Home Healthcare</h3>
+                    <p class="feature-text">Professional healthcare services delivered in the comfort of your home.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="tech-section">
+            <h2 class="tech-title">Technology & Innovation</h2>
+            <p style="font-size: 1.1rem; margin-bottom: 2rem; opacity: 0.9;">
+                We leverage cutting-edge technology to enhance patient care and improve health outcomes
+            </p>
+            <div class="tech-grid">
+                <div class="tech-item">
+                    <h4>Electronic Health Records</h4>
+                    <p>Seamless digital records for better care coordination and patient safety</p>
+                </div>
+                <div class="tech-item">
+                    <h4>Telemedicine Platform</h4>
+                    <p>Remote consultations and follow-ups for convenient healthcare access</p>
+                </div>
+                <div class="tech-item">
+                    <h4>AI-Assisted Diagnostics</h4>
+                    <p>Machine learning algorithms for faster and more accurate diagnoses</p>
+                </div>
+                <div class="tech-item">
+                    <h4>Mobile Health App</h4>
+                    <p>Patient portal for appointment booking, results, and health tracking</p>
+                </div>
+                <div class="tech-item">
+                    <h4>Robotic Surgery</h4>
+                    <p>Minimally invasive procedures with enhanced precision and faster recovery</p>
+                </div>
+                <div class="tech-item">
+                    <h4>Digital Imaging</h4>
+                    <p>Advanced radiology equipment for detailed diagnostic imaging</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="process-section">
+            <h2 class="section-title">Quality Assurance</h2>
+            <div style="text-align: center; max-width: 800px; margin: 0 auto;">
+                <p style="color: #4a5568; font-size: 1.1rem; line-height: 1.8; margin-bottom: 2rem;">
+                    Our commitment to excellence is reflected in our rigorous quality assurance processes. We maintain
+                    the highest standards through continuous monitoring, regular audits, and ongoing staff training to
+                    ensure every patient receives world-class care.
+                </p>
+                <div
+                    style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem; margin-top: 2rem;">
+                    <div>
+                        <h3 style="color: #6419a9; font-size: 1.5rem; margin-bottom: 0.5rem;">ISO 9001</h3>
+                        <p style="color: #4a5568;">Certified Quality Management</p>
+                    </div>
+                    <div>
+                        <h3 style="color: #6419a9; font-size: 1.5rem; margin-bottom: 0.5rem;">NABH</h3>
+                        <p style="color: #4a5568;">Accredited Healthcare Standards</p>
+                    </div>
+                    <div>
+                        <h3 style="color: #6419a9; font-size: 1.5rem; margin-bottom: 0.5rem;">NABL</h3>
+                        <p style="color: #4a5568;">Laboratory Accreditation</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

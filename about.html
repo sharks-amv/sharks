@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us - Dr. Salunke</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            background: linear-gradient(135deg, #f5f3ff 0%, #e0e7ff 100%);
+            min-height: 100vh;
+        }
+
+        /* Navbar Styles */
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 5%;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 20px rgba(100, 26, 169, 0.1);
+            border-bottom: 1px solid rgba(100, 26, 169, 0.1);
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: bold;
+            background: linear-gradient(45deg, #6419a9, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #6419a9;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            position: relative;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            background: linear-gradient(45deg, #6419a9, #8b5cf6);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(100, 26, 169, 0.3);
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, #6419a9 0%, #8b5cf6 100%);
+            color: white;
+            text-align: center;
+            padding: 8rem 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero h1 {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            opacity: 0.9;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        /* About Section */
+        .about {
+            max-width: 1200px;
+            margin: 4rem auto;
+            padding: 3rem 2rem;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(100, 26, 169, 0.1);
+        }
+
+        .about h1 {
+            color: #6419a9;
+            font-size: 2.8rem;
+            margin-bottom: 2rem;
+            font-weight: 700;
+            text-align: center;
+        }
+
+        .about p {
+            color: #4a5568;
+            font-size: 1.15rem;
+            line-height: 1.9;
+            margin-bottom: 2rem;
+            text-align: justify;
+        }
+
+        .about h2 {
+            color: #8b5cf6;
+            font-size: 1.8rem;
+            margin: 2rem 0 1rem;
+            font-weight: 600;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .about h1 {
+                font-size: 2rem;
+            }
+
+            .about p {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="logo">Dr.Salunke</div>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="about.html" class="active">About Us</a></li>
+            <li><a href="how-we-work.html">How we work</a></li>
+            <li><a href="work-with-us.html">Work with us</a></li>
+            <li><a href="investors.html">Investors</a></li>
+            <li><a href="contact.html">Contact Us</a></li>
+        </ul>
+    </nav>
+
+    <!-- Hero -->
+    <section class="hero">
+        <h1>About Us</h1>
+        <p>Learn more about our mission, vision, and commitment to healthcare excellence.</p>
+    </section>
+
+    <!-- About Section -->
+    <section class="about">
+        <h1>Who We Are</h1>
+        <p>At Dr. Salunke Healthcare, we are dedicated to transforming the way healthcare is delivered. With a strong
+            foundation built on trust, innovation, and compassion, we strive to provide world-class medical services
+            that prioritize patient care and well-being above all else.</p>
+
+        <h2>🌍 Our Mission</h2>
+        <p>To make healthcare accessible, affordable, and patient-centric by blending advanced medical technology with
+            personalized care.</p>
+
+        <h2>💡 Our Vision</h2>
+        <p>To become a global leader in healthcare innovation, setting new benchmarks in medical excellence, patient
+            trust, and holistic healing.</p>
+
+        <h2>🤝 Our Values</h2>
+        <p>We believe in integrity, compassion, innovation, and excellence. Every patient interaction is guided by these
+            core principles, ensuring that we deliver the highest standards of care.</p>
+    </section>
+</body>
+
+</html>

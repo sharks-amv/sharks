@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Investors - Dr. Salunke</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            background: linear-gradient(135deg, #f5f3ff 0%, #e0e7ff 100%);
+            min-height: 100vh;
+        }
+
+        /* Navbar */
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 5%;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 20px rgba(100, 26, 169, 0.1);
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: bold;
+            background: linear-gradient(45deg, #6419a9, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #6419a9;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            background: linear-gradient(45deg, #6419a9, #8b5cf6);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(100, 26, 169, 0.3);
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, #6419a9 0%, #8b5cf6 100%);
+            color: white;
+            text-align: center;
+            padding: 6rem 2rem 4rem;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+        }
+
+        /* Section Card */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 3rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 40px rgba(100, 26, 169, 0.1);
+        }
+
+        .section-title {
+            color: #6419a9;
+            font-size: 2.2rem;
+            margin-bottom: 2rem;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        /* Investment Highlights */
+        .highlights-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .highlight-card {
+            background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+            border-radius: 15px;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .highlight-card:hover {
+            transform: translateY(-5px);
+            border: 2px solid #8b5cf6;
+            box-shadow: 0 10px 30px rgba(100, 26, 169, 0.2);
+        }
+
+        .highlight-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .highlight-title {
+            font-size: 1.3rem;
+            color: #6419a9;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .highlight-text {
+            color: #4a5568;
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+
+        /* Financials */
+        .financials {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .finance-card {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: 0 5px 20px rgba(100, 26, 169, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .finance-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(100, 26, 169, 0.15);
+        }
+
+        .finance-card h3 {
+            color: #6419a9;
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .finance-card p {
+            color: #4a5568;
+            font-size: 1rem;
+        }
+
+        /* Contact Section */
+        .contact-box {
+            background: linear-gradient(135deg, #6419a9, #8b5cf6);
+            color: white;
+            padding: 3rem;
+            border-radius: 20px;
+            text-align: center;
+        }
+
+        .contact-box h2 {
+            margin-bottom: 1rem;
+            font-size: 2rem;
+        }
+
+        .contact-box p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-bottom: 2rem;
+        }
+
+        .contact-box a {
+            display: inline-block;
+            background: white;
+            color: #6419a9;
+            padding: 0.8rem 1.5rem;
+            font-weight: bold;
+            border-radius: 30px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .contact-box a:hover {
+            background: #e0e7ff;
+            transform: translateY(-2px);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .container {
+                padding: 2rem 1rem;
+            }
+
+            .section {
+                padding: 2rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="logo">Dr.Salunke</div>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="who-we-are.html">Who we are</a></li>
+            <li><a href="how-we-work.html">How we work</a></li>
+            <li><a href="work-with-us.html">Work with us</a></li>
+            <li><a href="investors.html" class="active">Investors</a></li>
+            <li><a href="contact.html">Contact Us</a></li>
+        </ul>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <h1>Invest with Confidence</h1>
+        <p>Partner with us to shape the future of healthcare through innovation, excellence, and sustainable growth.</p>
+    </section>
+
+    <div class="container">
+        <!-- Highlights -->
+        <div class="section">
+            <h2 class="section-title">Why Invest in Dr. Salunke</h2>
+            <div class="highlights-grid">
+                <div class="highlight-card">
+                    <div class="highlight-icon">📈</div>
+                    <h3 class="highlight-title">Sustained Growth</h3>
+                    <p class="highlight-text">Consistent double-digit growth supported by innovative healthcare models.
+                    </p>
+                </div>
+                <div class="highlight-card">
+                    <div class="highlight-icon">🏥</div>
+                    <h3 class="highlight-title">Expanding Network</h3>
+                    <p class="highlight-text">Presence across multiple regions with state-of-the-art healthcare
+                        facilities.</p>
+                </div>
+                <div class="highlight-card">
+                    <div class="highlight-icon">💡</div>
+                    <h3 class="highlight-title">Innovation Focus</h3>
+                    <p class="highlight-text">Investing heavily in AI, telemedicine, and digital healthcare
+                        technologies.</p>
+                </div>
+                <div class="highlight-card">
+                    <div class="highlight-icon">🌍</div>
+                    <h3 class="highlight-title">Social Impact</h3>
+                    <p class="highlight-text">Improving healthcare accessibility and affordability for communities
+                        worldwide.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Financials -->
+        <div class="section">
+            <h2 class="section-title">Key Financials</h2>
+            <div class="financials">
+                <div class="finance-card">
+                    <h3>Revenue Growth</h3>
+                    <p>15% YoY growth over the past 5 years</p>
+                </div>
+                <div class="finance-card">
+                    <h3>Patient Base</h3>
+                    <p>Over 1.2 million patients served annually</p>
+                </div>
+                <div class="finance-card">
+                    <h3>Return on Equity</h3>
+                    <p>18% average ROE in the last 3 years</p>
+                </div>
+                <div class="finance-card">
+                    <h3>Global Expansion</h3>
+                    <p>Operations in 5 countries and growing</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contact -->
+        <div class="contact-box">
+            <h2>Get in Touch</h2>
+            <p>Interested in joining our investor community? Reach out to explore opportunities with us.</p>
+            <a href="contact.html">Contact Investor Relations</a>
+        </div>
+    </div>
+</body>
+
+</html>

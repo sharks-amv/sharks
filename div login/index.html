@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>HMS — Hospital Management System (Frontend Only)</title>
+  <meta name="description" content="Frontend-only demo of a Hospital Management System with Patient/Doctor/Admin dashboards, mock data, and secure UI patterns." />
+  <meta name="csrf-token" content="" />
+
+  <!-- NOTE: This is a frontend-only demo. API calls are mocked in JS. Replace the mock API with real endpoints. -->
+  <style>
+    :root{
+      --bg: #0b1020;
+      --panel: #121933;
+      --panel-2: #0f1530;
+      --text: #e9eefc;
+      --muted: #aab4d4;
+      --accent: #7aa2ff;
+      --accent-2: #34d399;
+      --warn: #f59e0b;
+      --danger: #ef4444;
+      --ok: #10b981;
+      --border: #243056;
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+      --radius-xl: 18px;
+      --radius-lg: 14px;
+      --radius: 10px;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Inter, "Helvetica Neue", Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      background: radial-gradient(1200px 600px at 80% -10%, #1b2656 0%, #0b1020 60%);
+      color: var(--text);
+    }
+    a{color:var(--accent); text-decoration:none}
+    a:hover{text-decoration:underline}
+
+    /* Topbar */
+    .topbar{
+      position: sticky; top:0; z-index: 5;
+      display:flex; align-items:center; justify-content:space-between;
+      padding: 14px 18px; border-bottom:1px solid var(--border);
+      background: rgba(10,14,28,.7); backdrop-filter: blur(6px);
+    }
+    .brand{display:flex; align-items:center; gap:10px; font-weight:700; letter-spacing:.2px}
+    .badge{font-size:12px; padding:2px 8px; border:1px solid var(--border); border-radius:999px; color:var(--muted)}
+    .top-actions{display:flex; gap:10px; align-items:center}
+    .btn{border:1px solid var(--border); background:linear-gradient(180deg, #192145, #0e1430); color:var(--text);
+      padding:10px 14px; border-radius:10px; cursor:pointer; box-shadow: var(--shadow); transition:.2s transform, .2s opacity;
+    }
+    .btn:hover{transform: translateY(-1px)}
+    .btn.primary{background: linear-gradient(180deg, #3562ff, #1c49ef); border-color: #2146d9}
+    .btn.success{background: linear-gradient(180deg, #22c55e, #16a34a); border-color:#12803a}
+    .btn.warning{background: linear-gradient(180deg, #f59e0b, #d97706); border-color:#b45309}
+    .btn.ghost{background:transparent}
+    .btn.small{padding:6px 10px; font-size:.9rem}
+
+    /* Layout */
+    .wrap{display:grid; grid-template-columns: 260px 1fr; min-height: calc(100vh - 64px)}
+    .sidebar{border-right:1px solid var(--border); background: linear-gradient(180deg, var(--panel), var(--panel-2)); padding:16px; position:sticky; top:64px; height: calc(100vh - 64px); overflow:auto}
+    .content{padding:18px;}
+
+    /* Sidebar */
+    .usercard{display:flex; gap:12px; align-items:center; background: rgba(255,255,255,.03); border:1px solid var(--border); padding:12px; border-radius: var(--radius-lg);}
+    .avatar{width:42px; height:42px; border-radius:50%; background: linear-gradient(180deg, #4253a0, #25306b); border:1px solid #2b3a77}
+    .muted{color:var(--muted); font-size:12px}
+    .nav{margin-top:14px; display:flex; flex-direction:column; gap:6px}
+    .nav a{display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:10px; border:1px solid transparent}
+    .nav a.active, .nav a:hover{background: rgba(255,255,255,.04); border-color: var(--border)}
+
+    /* Panels */
+    .panel{background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01)); border:1px solid var(--border); border-radius: var(--radius-xl); padding:16px; box-shadow: var(--shadow)}
+    .grid{display:grid; gap:16px}
+    .grid.cols-2{grid-template-columns: repeat(2, minmax(0,1fr))}
+    .grid.cols-3{grid-template-columns: repeat(3, minmax(0,1fr))}
+    @media (max-width: 980px){ .wrap{grid-template-columns: 1fr} .sidebar{position:relative; top:auto; height:auto} .grid.cols-2,.grid.cols-3{grid-template-columns: 1fr} }
+
+    /* Forms */
+    .field{display:flex; flex-direction:column; gap:6px; margin-bottom:12px}
+    .field label{font-size:.9rem; color:#c9d4ff}
+    .input, select, textarea{
+      background: #0d1433; border:1px solid var(--border); color:var(--text);
+      padding:10px 12px; border-radius:10px; outline:none; transition: border-color .15s;
+    }
+    .input:focus, select:focus, textarea:focus{border-color: var(--accent)}
+    .hint{font-size:12px; color:var(--muted)}
+    .danger{color: var(--danger)}
+
+    /* Tables */
+    table{width:100%; border-collapse:collapse}
+    th, td{padding:10px 12px; border-bottom:1px solid var(--border); text-align:left}
+    th{color:#cdd7ff; font-weight:600}
+    tr:hover td{background: rgba(255,255,255,.02)}
+
+    /* Tabs */
+    .tabs{display:flex; gap:8px; margin-bottom:10px; flex-wrap: wrap}
+    .tab{padding:8px 12px; border:1px solid var(--border); border-radius:999px; cursor:pointer}
+    .tab.active{background: rgba(122,162,255,.15); border-color:#2f4bb5}
+
+    /* Toasts */
+    .toast{position:fixed; right:16px; bottom:16px; z-index:50}
+    .toast .msg{background: #0f1640; border:1px solid var(--border); padding:10px 14px; border-radius:12px; margin-top:8px; box-shadow: var(--shadow)}
+
+    /* Modals */
+    .modal{position: fixed; inset:0; background: rgba(0,0,0,.5); display:none; align-items:center; justify-content:center; z-index: 40}
+    .modal.show{display:flex}
+    .modal .window{background: linear-gradient(180deg, var(--panel), var(--panel-2)); border:1px solid var(--border); padding:18px; border-radius: 16px; width:min(680px, 92vw)}
+    .window h3{margin-top:0}
+
+    /* Utilities */
+    .row{display:flex; align-items:center; justify-content:space-between; gap:12px}
+    .sep{height:1px; background:var(--border); margin:10px 0}
+    .pill{display:inline-flex; padding:4px 8px; border:1px solid var(--border); border-radius:999px; font-size:12px; color:var(--muted)}
+    .kpi{display:flex; flex-direction:column}
+    .kpi .big{font-size:28px; font-weight:700}
+    .code{font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, Monospace; background:#0a1230; border:1px solid var(--border); padding:6px 8px; border-radius:8px}
+  </style>
+</head>
+<body>
+  <header class="topbar" aria-label="Top navigation">
+    <div class="brand" aria-label="Brand">
+      <div aria-hidden="true" style="width:28px;height:28px;border-radius:8px;background:linear-gradient(180deg,#7aa2ff,#3a57e8);box-shadow:var(--shadow)"></div>
+      <span>HMS</span>
+      <span class="badge" title="Demo only">Frontend Demo</span>
+    </div>
+    <div class="top-actions">
+      <span id="sessionInfo" class="pill" aria-live="polite">Not signed in</span>
+      <button class="btn small" id="btnLogin">Login</button>
+      <button class="btn small" id="btnRegister">Register</button>
+      <button class="btn small ghost" id="btnLogout" style="display:none">Logout</button>
+    </div>
+  </header>
+
+  <div class="wrap" role="presentation">
+    <aside class="sidebar" aria-label="Sidebar navigation">
+      <div class="usercard" id="userCard" aria-live="polite">
+        <div class="avatar" role="img" aria-label="User avatar"></div>
+        <div>
+          <div id="ucName" style="font-weight:600">Guest</div>
+          <div class="muted" id="ucRole">Unauthenticated</div>
+        </div>
+      </div>
+      <nav class="nav" id="nav"></nav>
+      <div class="sep"></div>
+      <div class="muted">Tip: This is a single-file SPA demo. Replace the mock API with real endpoints later.</div>
+    </aside>
+
+    <main class="content" id="app" aria-live="polite"></main>
+  </div>
+
+  <!-- Login Modal -->
+  <div class="modal" id="loginModal" role="dialog" aria-modal="true" aria-labelledby="loginTitle">
+    <div class="window">
+      <div class="row"><h3 id="loginTitle">Sign in</h3><button class="btn small ghost" onclick="closeModal('loginModal')">Close</button></div>
+      <form id="loginForm">
+        <div class="grid cols-2">
+          <div class="field"><label for="loginEmail">Email</label><input id="loginEmail" name="email" class="input" type="email" required autocomplete="username" /></div>
+          <div class="field"><label for="loginPassword">Password</label><input id="loginPassword" name="password" class="input" type="password" required autocomplete="current-password" /></div>
+        </div>
+        <div class="field">
+          <label for="loginRole">Role</label>
+          <select id="loginRole" name="role" required>
+            <option value="PATIENT">Patient</option>
+            <option value="DOCTOR">Doctor</option>
+            <option value="ADMIN">Admin</option>
+          </select>
+          <div class="hint">Demo uses role to route you to respective dashboard.</div>
+        </div>
+        <div class="row">
+          <div>
+            <label class="pill"><input id="use2fa" type="checkbox" /> Use 2FA (demo)</label>
+          </div>
+          <button class="btn primary" type="submit">Login</button>
+        </div>
+      </form>
+      <div class="hint">Forgot password? In a real app this would email a reset link.</div>
+    </div>
+  </div>
+
+  <!-- Register Modal -->
+  <div class="modal" id="registerModal" role="dialog" aria-modal="true" aria-labelledby="regTitle">
+    <div class="window">
+      <div class="row"><h3 id="regTitle">Create account (Patient)</h3><button class="btn small ghost" onclick="closeModal('registerModal')">Close</button></div>
+      <form id="registerForm">
+        <div class="grid cols-2">
+          <div class="field"><label for="regName">Full name</label><input id="regName" name="name" class="input" required /></div>
+          <div class="field"><label for="regEmail">Email</label><input id="regEmail" name="email" type="email" class="input" required autocomplete="email" /></div>
+          <div class="field"><label for="regDOB">Date of birth</label><input id="regDOB" name="dob" type="date" class="input" required /></div>
+          <div class="field"><label for="regPhone">Phone</label><input id="regPhone" name="phone" type="tel" class="input" /></div>
+          <div class="field"><label for="regPassword">Password</label><input id="regPassword" name="password" type="password" class="input" minlength="8" required /></div>
+          <div class="field"><label for="regAddress">Address</label><input id="regAddress" name="address" class="input" /></div>
+        </div>
+        <div class="row"><span class="hint">By creating an account you consent to the demo privacy notice.</span><button class="btn success" type="submit">Register</button></div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toasts -->
+  <div class="toast" id="toast" aria-live="polite"></div>
+
+  <script>
+  /* =========================
+     Frontend SPA + Mock API
+     ========================= */
+  const $ = (sel, root=document) => root.querySelector(sel);
+  const $$ = (sel, root=document) => Array.from(root.querySelectorAll(sel));
+
+  // Simple router
+  const routes = {
+    'home': renderHome,
+    'patient': renderPatientDashboard,
+    'doctor': renderDoctorDashboard,
+    'admin': renderAdminDashboard,
+  };
+
+  // App state
+  const state = {
+    user: null,
+    csrf: null,
+    db: { users: [], patients: [], doctors: [], departments: [], appointments: [], encounters: [], prescriptions: [], labsOrders: [], labsResults: [], messages: [], documents: [], audits: [], securityEvents: [] }
+  };
+
+  // Seed demo data (persist to localStorage so refresh keeps it)
+  function seed() {
+    const saved = localStorage.getItem('hms-demo-db');
+    if (saved) { state.db = JSON.parse(saved); return; }
+    const now = new Date().toISOString();
+    const admin = { id: 'u1', role:'ADMIN', name:'Alex Admin', email:'admin@hms.demo', password:'AdminPass123', emailVerified:true, created_at: now };
+    const docU = { id: 'u2', role:'DOCTOR', name:'Dr. Neha Kapoor', email:'neha@hms.demo', password:'DoctorPass123', emailVerified:true };
+    const patU = { id: 'u3', role:'PATIENT', name:'Ravi Sharma', email:'ravi@hms.demo', password:'PatientPass123', emailVerified:true };
+    const doctor = { id:'d1', user_id:'u2', department_id:'dep1', specialties:['Cardiology'], license_no:'MH-12345', npi_no:'NPI-555' };
+    const patient = { id:'p1', user_id:'u3', mrn:'MRN-1001', dob:'1990-06-12', sex_at_birth:'M', address:'Pune', emergency_contact:'Priya 98xxxxxx', insurance_provider:'Acme Health', policy_no:'AH-7788', consent_flags:{share_with_research:false}};
+    const dep = { id:'dep1', name:'Cardiology', description:'Heart & vascular' };
+    const appt = { id:'a1', patient_id:'p1', doctor_id:'d1', start_time: new Date(Date.now()+86400000).toISOString(), end_time: new Date(Date.now()+90000000).toISOString(), status:'CONFIRMED', notes:'Initial consult' };
+    const enc = { id:'e1', patient_id:'p1', doctor_id:'d1', datetime: now, reason:'Chest pain', notes:'Lifestyle + ECG', vitals:{bp:'120/80', hr:74}, diagnoses:['Angina?'], allergies:['Penicillin'] };
+    const rx = { id:'r1', patient_id:'p1', doctor_id:'d1', drug_name:'Aspirin', dosage:'75mg', frequency:'OD', start_date: now.substring(0,10), end_date:null, notes:'After meals' };
+    const lbo = { id:'lo1', patient_id:'p1', doctor_id:'d1', test_type:'Lipid Panel', order_date: now, status:'COMPLETED', notes:'' };
+    const lbr = { id:'lr1', order_id:'lo1', result_values:{LDL:110, HDL:50, TG:140}, result_date: now, attachments:[] };
+
+    state.db.users.push(admin, docU, patU);
+    state.db.doctors.push(doctor);
+    state.db.patients.push(patient);
+    state.db.departments.push(dep);
+    state.db.appointments.push(appt);
+    state.db.encounters.push(enc);
+    state.db.prescriptions.push(rx);
+    state.db.labsOrders.push(lbo);
+    state.db.labsResults.push(lbr);
+    persist();
+  }
+  function persist(){ localStorage.setItem('hms-demo-db', JSON.stringify(state.db)); }
+
+  // Mock security helpers
+  function newCsrf(){ const t = crypto.getRandomValues(new Uint8Array(16)); return [...t].map(x=>x.toString(16).padStart(2,'0')).join(''); }
+  function setCsrf(){ state.csrf = newCsrf(); document.querySelector('meta[name="csrf-token"]').setAttribute('content', state.csrf); }
+  function requireCsrf(token){ if(token !== state.csrf) throw new Error('CSRF token invalid'); }
+
+  // Mock auth (NEVER do plaintext in real apps)
+  function login({email,password,role, use2fa=false}){
+    const u = state.db.users.find(x=>x.email===email && x.password===password && x.role===role);
+    if(!u) throw new Error('Invalid credentials');
+    const session = { id: u.id, name:u.name, role:u.role, email:u.email, token: 'demo-access.'+btoa(u.id+Date.now()), expires: Date.now()+ (10*60*1000) };
+    if(use2fa){ // simulate 2FA challenge
+      const code = (Math.floor(100000 + Math.random()*900000)).toString();
+      session._2fa = code; // in real life never expose to client
+      alert('Demo 2FA code: '+code);
+    }
+    state.user = session; updateSessionUI();
+  }
+  function verify2fa(code){ if(state.user?._2fa && code===state.user._2fa){ delete state.user._2fa; toast('2FA verified'); updateSessionUI(); } else { throw new Error('2FA code invalid'); } }
+  function logout(){ state.user=null; updateSessionUI(); }
+
+  // Navigation + rendering
+  function setNav(){
+    const n = $('#nav'); n.innerHTML='';
+    const links = [ {k:'home', label:'Home'}, ];
+    if(state.user?.role==='PATIENT'){
+      links.push({k:'patient', label:'Patient Dashboard'});
+    } else if(state.user?.role==='DOCTOR'){
+      links.push({k:'doctor', label:'Doctor Dashboard'});
+    } else if(state.user?.role==='ADMIN'){
+      links.push({k:'admin', label:'Admin Dashboard'});
+    }
+    links.forEach(l=>{
+      const a = document.createElement('a'); a.href = `#${l.k}`; a.textContent = l.label; a.setAttribute('data-route', l.k);
+      n.appendChild(a);
+    });
+    highlightActive();
+  }
+  function highlightActive(){ $$('#nav a').forEach(a=>{ a.classList.toggle('active', a.getAttribute('data-route')===location.hash.substring(1)); }); }
+
+  function route(){ const key = location.hash.substring(1) || 'home'; highlightActive(); (routes[key]||renderNotFound)(); }
+
+  // UI helpers
+  function toast(msg){ const box = $('#toast'); const el = document.createElement('div'); el.className='msg'; el.textContent = msg; box.appendChild(el); setTimeout(()=>el.remove(), 3200); }
+  function openModal(id){ $('#'+id).classList.add('show'); setTimeout(()=>$('#'+id+' input, #'+id+' select')?.focus(), 0); }
+  function closeModal(id){ $('#'+id).classList.remove('show'); }
+  function updateSessionUI(){
+    const si = $('#sessionInfo');
+    if(state.user){ si.textContent = `${state.user.name} — ${state.user.role}`; $('#btnLogin').style.display='none'; $('#btnRegister').style.display='none'; $('#btnLogout').style.display='inline-block'; $('#ucName').textContent=state.user.name; $('#ucRole').textContent=state.user.role; }
+    else { si.textContent = 'Not signed in'; $('#btnLogin').style.display='inline-block'; $('#btnRegister').style.display='inline-block'; $('#btnLogout').style.display='none'; $('#ucName').textContent='Guest'; $('#ucRole').textContent='Unauthenticated'; }
+    setNav(); route();
+  }
+
+  // Renderers
+  function renderHome(){
+    $('#app').innerHTML = `
+      <div class="grid cols-2">
+        <section class="panel">
+          <h2>Welcome to HMS (Demo)</h2>
+          <p class="muted">A frontend-only prototype showing Patient, Doctor, and Admin flows with secure UI patterns on a budget.</p>
+          <div class="grid cols-3">
+            <div class="panel">
+              <div class="kpi"><span class="muted">Patients</span><span class="big">${state.db.patients.length}</span></div>
+            </div>
+            <div class="panel">
+              <div class="kpi"><span class="muted">Doctors</span><span class="big">${state.db.doctors.length}</span></div>
+            </div>
+            <div class="panel">
+              <div class="kpi"><span class="muted">Appointments</span><span class="big">${state.db.appointments.length}</span></div>
+            </div>
+          </div>
+          <div class="sep"></div>
+          <div class="row">
+            <div>
+              <div class="pill">Security-first UI</div>
+              <div class="pill">CSRF token demo</div>
+              <div class="pill">2FA flow (mock)</div>
+            </div>
+            <div>
+              <button class="btn primary" onclick="openModal('loginModal')">Sign in</button>
+              <button class="btn" onclick="openModal('registerModal')">Create patient account</button>
+            </div>
+          </div>
+        </section>
+        <section class="panel">
+          <h3>How to use this demo</h3>
+          <ol>
+            <li>Click <strong>Login</strong> and use one of the demo users:<br>
+              <div class="code">Admin — admin@hms.demo / AdminPass123<br>Doctor — neha@hms.demo / DoctorPass123<br>Patient — ravi@hms.demo / PatientPass123</div>
+            </li>
+            <li>Pick the role matching the account to route to the right dashboard.</li>
+            <li>Try actions like creating an encounter, booking an appointment, or messaging.</li>
+          </ol>
+          <p class="hint">Replace the <em>mock API</em> with your real backend later. This UI already includes CSRF token handling and form validation hooks.</p>
+        </section>
+      </div>`;
+  }
+
+  function renderPatientDashboard(){
+    const u = state.user; if(!u || u.role!=='PATIENT'){ $('#app').innerHTML=guardMsg('PATIENT'); return; }
+    const patient = state.db.patients.find(p=>state.db.users.find(uu=>uu.id===p.user_id)?.email===u.email);
+    const appts = state.db.appointments.filter(a=>a.patient_id===patient.id);
+    const rxs = state.db.prescriptions.filter(r=>r.patient_id===patient.id);
+    const orders = state.db.labsOrders.filter(o=>o.patient_id===patient.id);
+    const results = state.db.labsResults.filter(r=>orders.some(o=>o.id===r.order_id));
+
+    $('#app').innerHTML = `
+      <div class="row"><h2>Patient dashboard</h2><span class="pill">MRN: ${patient.mrn}</span></div>
+      <div class="grid cols-2">
+        <section class="panel">
+          <h3>Upcoming appointments</h3>
+          ${renderTable(['When','Doctor','Status'], appts.map(a=>[
+            new Date(a.start_time).toLocaleString(), docName(a.doctor_id), chip(a.status)
+          ]))}
+          <div class="sep"></div>
+          <button class="btn" onclick="openApptModal('${patient.id}')">Book appointment</button>
+        </section>
+        <section class="panel">
+          <h3>Prescriptions</h3>
+          ${renderTable(['Drug','Dose','Freq','Start','End','Doctor'], rxs.map(r=>[r.drug_name, r.dosage, r.frequency, r.start_date, r.end_date||'-', docName(r.doctor_id)]))}
+        </section>
+        <section class="panel">
+          <h3>Lab results</h3>
+          ${renderTable(['Test','Date','Key values'], results.map(r=>{
+            const ord = orders.find(o=>o.id===r.order_id); return [ord?.test_type||'-', new Date(r.result_date).toLocaleDateString(), JSON.stringify(r.result_values)];
+          }))}
+        </section>
+        <section class="panel">
+          <h3>Secure messages</h3>
+          <div id="msgThread">${renderMessages(u.id)}</div>
+          <div class="row" style="margin-top:10px">
+            <input id="msgInput" class="input" placeholder="Type a message to your doctor" aria-label="Message input" />
+            <button class="btn" onclick="sendMessage('${u.id}')">Send</button>
+          </div>
+        </section>
+      </div>`;
+  }
+
+  function renderDoctorDashboard(){
+    const u = state.user; if(!u || u.role!=='DOCTOR'){ $('#app').innerHTML=guardMsg('DOCTOR'); return; }
+    const doc = state.db.doctors.find(d=>state.db.users.find(uu=>uu.id===d.user_id)?.email===u.email);
+    const assignedPatients = state.db.patients.filter(p=> state.db.encounters.some(e=>e.patient_id===p.id && e.doctor_id===doc.id) || state.db.appointments.some(a=>a.patient_id===p.id && a.doctor_id===doc.id));
+
+    $('#app').innerHTML = `
+      <div class="row"><h2>Doctor dashboard</h2><span class="pill">Dept: ${deptName(doc.department_id)}</span></div>
+      <div class="grid cols-2">
+        <section class="panel">
+          <div class="row"><h3>Assigned patients</h3><button class="btn small" onclick="exportCSV('patients')">Export CSV</button></div>
+          ${renderTable(['MRN','Name','DOB','Actions'], assignedPatients.map(p=>[p.mrn, userById(p.user_id).name, p.dob, `<button class='btn small' onclick=\"openPatient('${p.id}')\">Open</button>`]))}
+        </section>
+        <section class="panel">
+          <h3>Schedule (next 7 days)</h3>
+          ${renderTable(['When','Patient','Status'], state.db.appointments.filter(a=>a.doctor_id===doc.id).map(a=>[new Date(a.start_time).toLocaleString(), patientName(a.patient_id), chip(a.status)]))}
+        </section>
+      </div>
+      <div id="patientDetail"></div>`;
+  }
+
+  function openPatient(pid){
+    const p = state.db.patients.find(x=>x.id===pid);
+    const encs = state.db.encounters.filter(e=>e.patient_id===pid);
+    const rxs = state.db.prescriptions.filter(r=>r.patient_id===pid);
+    const orders = state.db.labsOrders.filter(o=>o.patient_id===pid);
+    const results = state.db.labsResults.filter(r=> orders.some(o=>o.id===r.order_id));
+
+    $('#patientDetail').innerHTML = `
+      <section class="panel" style="margin-top:16px">
+        <div class="row"><h3>Patient — ${userById(p.user_id).name}</h3><span class="pill">MRN ${p.mrn}</span></div>
+        <div class="tabs" id="ptTabs">
+          ${['Summary','Encounters','Vitals','Orders','Results','Prescriptions','Documents','Notes'].map((t,i)=>`<button class='tab ${i===0?'active':''}' onclick=\"switchTab(${i})\">${t}</button>`).join('')}
+        </div>
+        <div id="ptTabContent"></div>
+      </section>`;
+    // initial tab
+    renderPatientTab(0, {p, encs, rxs, orders, results});
+  }
+  function switchTab(i){
+    $$('#ptTabs .tab').forEach((x,ix)=>x.classList.toggle('active', ix===i));
+    const p = $('#patientDetail'); if(!p) return; // gather fresh
+    const name = $('#patientDetail h3')?.textContent;
+    const mrn = $('.pill', p)?.textContent;
+    // Recollect data
+    const pid = (mrn||'').split(' ').pop();
+    const patient = state.db.patients.find(x=>x.mrn===pid);
+    renderPatientTab(i, {
+      p: patient,
+      encs: state.db.encounters.filter(e=>e.patient_id===patient.id),
+      rxs: state.db.prescriptions.filter(r=>r.patient_id===patient.id),
+      orders: state.db.labsOrders.filter(o=>o.patient_id===patient.id),
+      results: state.db.labsResults.filter(r=> state.db.labsOrders.some(o=>o.id===r.order_id && o.patient_id===patient.id))
+    });
+  }
+  function renderPatientTab(i, ctx){
+    const c = $('#ptTabContent');
+    if(i===0){ // Summary
+      c.innerHTML = `
+        <div class="grid cols-3">
+          <div class="panel"><div class="muted">DOB</div><div>${ctx.p.dob}</div></div>
+          <div class="panel"><div class="muted">Sex at birth</div><div>${ctx.p.sex_at_birth||'-'}</div></div>
+          <div class="panel"><div class="muted">Allergies</div><div>${(ctx.encs[0]?.allergies||[]).join(', ')||'-'}</div></div>
+        </div>`;
+    }
+    if(i===1){ // Encounters
+      c.innerHTML = `
+        <div class="row"><h4>Encounters</h4><button class="btn small" onclick="openEncounterForm('${ctx.p.id}')">New encounter</button></div>
+        ${renderTable(['Date','Reason','Notes','Vitals','Dx'], ctx.encs.map(e=>[new Date(e.datetime).toLocaleString(), e.reason, e.notes, JSON.stringify(e.vitals), (e.diagnoses||[]).join(', ')]))}`;
+    }
+    if(i===2){ // Vitals (from latest encounter)
+      const latest = ctx.encs[0];
+      c.innerHTML = `
+        <h4>Latest vitals</h4>
+        ${latest ? `<div class='grid cols-3'>
+            ${Object.entries(latest.vitals||{}).map(([k,v])=>`<div class='panel'><div class='muted'>${k}</div><div>${v}</div></div>`).join('')}
+          </div>`: '<div class="muted">No vitals recorded.</div>'}`;
+    }
+    if(i===3){ // Orders
+      c.innerHTML = `
+        <div class="row"><h4>Lab / Imaging Orders</h4><button class="btn small" onclick="openOrderForm('${ctx.p.id}')">New order</button></div>
+        ${renderTable(['Type','Date','Status','Notes'], ctx.orders.map(o=>[o.test_type, new Date(o.order_date).toLocaleString(), chip(o.status), o.notes||'-']))}`;
+    }
+    if(i===4){ // Results
+      c.innerHTML = `
+        <h4>Results</h4>
+        ${renderTable(['Order','Date','Values'], ctx.results.map(r=>{ const o = state.db.labsOrders.find(o=>o.id===r.order_id); return [o?.test_type||'-', new Date(r.result_date).toLocaleString(), JSON.stringify(r.result_values)]; }))}`;
+    }
+    if(i===5){ // Rx
+      c.innerHTML = `
+        <div class="row"><h4>Prescriptions</h4><button class="btn small" onclick="openRxForm('${ctx.p.id}')">New Rx</button></div>
+        ${renderTable(['Drug','Dose','Freq','Start','End'], ctx.rxs.map(r=>[r.drug_name, r.dosage, r.frequency, r.start_date, r.end_date||'-']))}`;
+    }
+    if(i===6){ // Docs
+      c.innerHTML = `<h4>Documents</h4><div class='muted'>File uploads are mocked. In production, files are scanned with antivirus and stored with signed URLs.</div>`;
+    }
+    if(i===7){ // Notes
+      c.innerHTML = `
+        <h4>Notes</h4>
+        <textarea id="docNote" rows="4" placeholder="Add a note for this patient"></textarea>
+        <div class="row" style="margin-top:8px"><span class="hint">Notes persist locally in this demo.</span><button class="btn small" onclick="saveNote('${ctx.p.id}')">Save note</button></div>
+        <div id="notesList" style="margin-top:10px"></div>`;
+      loadNotes(ctx.p.id);
+    }
+  }
+
+  function renderAdminDashboard(){
+    const u = state.user; if(!u || u.role!=='ADMIN'){ $('#app').innerHTML=guardMsg('ADMIN'); return; }
+    $('#app').innerHTML = `
+      <div class="row"><h2>Admin dashboard</h2><span class="pill">Read-only demo</span></div>
+      <div class="grid cols-2">
+        <section class="panel">
+          <div class="row"><h3>Users</h3><button class="btn small" onclick="exportCSV('users')">Export CSV</button></div>
+          ${renderTable(['Name','Email','Role'], state.db.users.map(u=>[u.name, u.email, u.role]))}
+        </section>
+        <section class="panel">
+          <h3>Departments</h3>
+          ${renderTable(['Name','Description'], state.db.departments.map(d=>[d.name, d.description]))}
+        </section>
+        <section class="panel">
+          <h3>Audit (sample)</h3>
+          ${renderTable(['When','Actor','Action','Resource'], (state.db.audits.slice(-5)).map(a=>[new Date(a.ts).toLocaleString(), a.actor, a.action, a.resource||'-']))}
+        </section>
+        <section class="panel">
+          <h3>Security events (sample)</h3>
+          <div class="muted">Login spikes, blocked IPs, CSRF failures would appear here in production.</div>
+        </section>
+      </div>`;
+  }
+
+  // Components
+  function renderTable(headers, rows){
+    return `<div style='overflow:auto'><table role='table'><thead><tr>${headers.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr>${r.map(c=>`<td>${c}</td>`).join('')}</tr>`).join('') || `<tr><td colspan='${headers.length}' class='muted'>No data</td></tr>`}</tbody></table></div>`;
+  }
+  function chip(text){
+    const colors = {CONFIRMED:'#1f9d62', COMPLETED:'#2563eb', CANCELLED:'#b91c1c', REQUESTED:'#f59e0b'};
+    return `<span class='pill' style='border-color:${(colors[text]||'#3b82f6')}'>${text}</span>`;
+  }
+
+  // Forms/modals for actions (mocked with CSRF)
+  function openApptModal(patientId){ const id='apptModal'; mountModal(id, `
+      <div class='row'><h3>Book appointment</h3><button class='btn small ghost' onclick=\"closeModal('${id}')\">Close</button></div>
+      <form onsubmit=\"submitAppt(event,'${patientId}')\">
+        <input type='hidden' name='csrf' value='${state.csrf}' />
+        <div class='grid cols-2'>
+          <div class='field'><label>Doctor</label><select name='doctor_id' required>${state.db.doctors.map(d=>`<option value='${d.id}'>${docName(d.id)}</option>`)}</select></div>
+          <div class='field'><label>Date & time</label><input class='input' type='datetime-local' name='start' required /></div>
+        </div>
+        <div class='field'><label>Reason</label><input class='input' name='reason' placeholder='Short reason' /></div>
+        <div class='row'><span class='hint'>CSRF protected (demo)</span><button class='btn primary' type='submit'>Book</button></div>
+      </form>`); }
+  function submitAppt(e, pid){ e.preventDefault(); const fd = new FormData(e.target); try{ requireCsrf(fd.get('csrf')); const id='a'+Date.now(); const start = new Date(fd.get('start')).toISOString(); state.db.appointments.push({id, patient_id:pid, doctor_id:fd.get('doctor_id'), start_time:start, end_time:new Date(new Date(start).getTime()+30*60000).toISOString(), status:'REQUESTED', notes:fd.get('reason')}); persist(); toast('Appointment requested'); closeModal('apptModal'); route(); }catch(err){ alert(err.message);} }
+
+  function openEncounterForm(pid){ const id='encModal'; mountModal(id, `
+      <div class='row'><h3>New encounter</h3><button class='btn small ghost' onclick=\"closeModal('${id}')\">Close</button></div>
+      <form onsubmit=\"submitEncounter(event,'${pid}')\">
+        <input type='hidden' name='csrf' value='${state.csrf}' />
+        <div class='grid cols-3'>
+          <div class='field'><label>Date & time</label><input class='input' type='datetime-local' name='dt' required /></div>
+          <div class='field'><label>Reason</label><input class='input' name='reason' required /></div>
+          <div class='field'><label>BP</label><input class='input' name='bp' placeholder='120/80' /></div>
+          <div class='field'><label>HR</label><input class='input' name='hr' placeholder='72' /></div>
+          <div class='field'><label>Dx (comma-separated)</label><input class='input' name='dx' /></div>
+          <div class='field'><label>Allergies (comma-separated)</label><input class='input' name='allergies' /></div>
+        </div>
+        <div class='field'><label>Notes</label><textarea name='notes' rows='3'></textarea></div>
+        <div class='row'><span class='hint'>CSRF protected (demo)</span><button class='btn primary' type='submit'>Save encounter</button></div>
+      </form>`); }
+  function submitEncounter(e, pid){ e.preventDefault(); const fd = new FormData(e.target); try{ requireCsrf(fd.get('csrf')); const id='e'+Date.now(); const dt = new Date(fd.get('dt')).toISOString(); const doc = state.db.doctors.find(d=> state.db.users.find(u=>u.id===d.user_id)?.email===state.user.email ); state.db.encounters.unshift({id, patient_id:pid, doctor_id:doc.id, datetime:dt, reason:fd.get('reason'), notes:fd.get('notes'), vitals:{bp:fd.get('bp'), hr:fd.get('hr')}, diagnoses:(fd.get('dx')||'').split(',').map(s=>s.trim()).filter(Boolean), allergies:(fd.get('allergies')||'').split(',').map(s=>s.trim()).filter(Boolean)}); persist(); toast('Encounter saved'); closeModal('encModal'); switchTab(1); }catch(err){ alert(err.message);} }
+
+  function openOrderForm(pid){ const id='ordModal'; mountModal(id, `
+      <div class='row'><h3>New order</h3><button class='btn small ghost' onclick=\"closeModal('${id}')\">Close</button></div>
+      <form onsubmit=\"submitOrder(event,'${pid}')\">
+        <input type='hidden' name='csrf' value='${state.csrf}' />
+        <div class='grid cols-2'>
+          <div class='field'><label>Type</label><select name='type' required><option>Complete Blood Count</option><option>Lipid Panel</option><option>Chest X-ray</option><option>ECG</option></select></div>
+          <div class='field'><label>Priority</label><select name='priority'><option>ROUTINE</option><option>URGENT</option></select></div>
+        </div>
+        <div class='field'><label>Notes</label><textarea name='notes' rows='3'></textarea></div>
+        <div class='row'><span class='hint'>CSRF protected (demo)</span><button class='btn primary' type='submit'>Place order</button></div>
+      </form>`); }
+  function submitOrder(e, pid){ e.preventDefault(); const fd = new FormData(e.target); try{ requireCsrf(fd.get('csrf')); const id='lo'+Date.now(); const doc = state.db.doctors.find(d=> state.db.users.find(u=>u.id===d.user_id)?.email===state.user.email ); state.db.labsOrders.unshift({id, patient_id:pid, doctor_id:doc.id, test_type:fd.get('type'), order_date:new Date().toISOString(), status:'REQUESTED', notes:fd.get('notes')}); persist(); toast('Order placed'); closeModal('ordModal'); switchTab(3); }catch(err){ alert(err.message);} }
+
+  function openRxForm(pid){ const id='rxModal'; mountModal(id, `
+      <div class='row'><h3>New prescription</h3><button class='btn small ghost' onclick=\"closeModal('${id}')\">Close</button></div>
+      <form onsubmit=\"submitRx(event,'${pid}')\">
+        <input type='hidden' name='csrf' value='${state.csrf}' />
+        <div class='grid cols-3'>
+          <div class='field'><label>Drug</label><input class='input' name='drug' required /></div>
+          <div class='field'><label>Dose</label><input class='input' name='dose' required /></div>
+          <div class='field'><label>Frequency</label><input class='input' name='freq' required placeholder='OD / BID / TID' /></div>
+        </div>
+        <div class='row'><span class='hint'>CSRF protected (demo)</span><button class='btn primary' type='submit'>Prescribe</button></div>
+      </form>`); }
+  function submitRx(e, pid){ e.preventDefault(); const fd = new FormData(e.target); try{ requireCsrf(fd.get('csrf')); const id='r'+Date.now(); const doc = state.db.doctors.find(d=> state.db.users.find(u=>u.id===d.user_id)?.email===state.user.email ); state.db.prescriptions.unshift({id, patient_id:pid, doctor_id:doc.id, drug_name:fd.get('drug'), dosage:fd.get('dose'), frequency:fd.get('freq'), start_date:new Date().toISOString().substring(0,10), end_date:null, notes:''}); persist(); toast('Prescription added'); closeModal('rxModal'); switchTab(5); }catch(err){ alert(err.message);} }
+
+  function mountModal(id, inner){ let el = document.createElement('div'); el.className='modal show'; el.id=id; el.innerHTML = `<div class='window'>${inner}</div>`; document.body.appendChild(el); }
+
+  // Messages (mock secure messaging)
+  function renderMessages(userId){ const threads = state.db.messages.filter(m=>m.sender_user_id===userId || m.recipient_user_id===userId).slice(-10); if(!threads.length) return '<div class="muted">No messages yet</div>'; return threads.map(m=>`<div class='panel'><div class='muted'>${userById(m.sender_user_id).name} → ${userById(m.recipient_user_id).name} — ${new Date(m.created_at).toLocaleString()}</div><div>${m.body}</div></div>`).join(''); }
+  function sendMessage(sender){ const inp = $('#msgInput'); const body = (inp.value||'').trim(); if(!body) return; const recipient = state.db.users.find(u=>u.role==='DOCTOR'); state.db.messages.push({ id:'m'+Date.now(), sender_user_id: sender, recipient_user_id: recipient.id, body, created_at: new Date().toISOString() }); persist(); toast('Message sent'); renderPatientDashboard(); }
+
+  // Notes
+  function saveNote(pid){ const t = $('#docNote'); const content = (t.value||'').trim(); if(!content) return; state.db.audits.push({ ts: Date.now(), actor: state.user?.email || 'unknown', action:'ADD_NOTE', resource: pid }); persist(); const list = $('#notesList'); const item = document.createElement('div'); item.className='panel'; item.textContent = content; list.prepend(item); t.value=''; toast('Note saved'); }
+  function loadNotes(pid){ const notes = state.db.audits.filter(a=>a.resource===pid && a.action==='ADD_NOTE'); const list = $('#notesList'); list.innerHTML = notes.map(n=>`<div class='panel'><div class='muted'>${new Date(n.ts).toLocaleString()} by ${n.actor}</div><div>Note saved (content stored in demo only)</div></div>`).join(''); }
+
+  // Utilities
+  function userById(uid){ return state.db.users.find(u=>u.id===uid) || {name:'Unknown'}; }
+  function patientName(pid){ const p = state.db.patients.find(p=>p.id===pid); return userById(p.user_id).name; }
+  function docName(did){ const d = state.db.doctors.find(d=>d.id===did); return userById(d.user_id).name; }
+  function deptName(id){ return state.db.departments.find(d=>d.id===id)?.name || '-'; }
+  function guardMsg(role){ return `<section class='panel'><h3>Access denied</h3><p class='muted'>This area is restricted to ${role} users. Please sign in with the correct role.</p></section>`; }
+
+  // Auth forms
+  $('#btnLogin').addEventListener('click', ()=>openModal('loginModal'));
+  $('#btnRegister').addEventListener('click', ()=>openModal('registerModal'));
+  $('#btnLogout').addEventListener('click', ()=>{ logout(); toast('Signed out'); });
+  $('#loginForm').addEventListener('submit', (e)=>{
+    e.preventDefault(); const fd = new FormData(e.target);
+    try{ login({ email:fd.get('email'), password:fd.get('password'), role:fd.get('role'), use2fa: $('#use2fa').checked }); closeModal('loginModal'); if(state.user?._2fa){ const code = prompt('Enter the 2FA code shown'); verify2fa(code); } location.hash = state.user.role==='PATIENT' ? '#patient' : state.user.role==='DOCTOR' ? '#doctor' : '#admin'; toast('Welcome back'); }
+    catch(err){ alert(err.message); }
+  });
+  $('#registerForm').addEventListener('submit', (e)=>{
+    e.preventDefault(); const fd = new FormData(e.target); const email = fd.get('email'); if(state.db.users.some(u=>u.email===email)){ alert('Email already exists'); return; }
+    const uid = 'u'+Date.now(); const pid = 'p'+Date.now(); state.db.users.push({ id:uid, role:'PATIENT', name:fd.get('name'), email, password:fd.get('password'), emailVerified:true, phone:fd.get('phone') });
+    state.db.patients.push({ id:pid, user_id:uid, mrn:'MRN-'+Math.floor(1000+Math.random()*9000), dob:fd.get('dob'), sex_at_birth:'-', address:fd.get('address'), emergency_contact:'', insurance_provider:'', policy_no:'', consent_flags:{} });
+    persist(); toast('Account created. Please sign in.'); closeModal('registerModal'); openModal('loginModal');
+  });
+
+  // Session timeout warning (demo)
+  setInterval(()=>{
+    if(state.user && Date.now()>state.user.expires-60000 && !state.user._warned){ toast('Session expiring soon…'); state.user._warned=true; }
+  }, 5000);
+
+  // Init
+  seed(); setCsrf(); setNav(); route(); updateSessionUI();
+  window.addEventListener('hashchange', route);
+  </script>
+</body>
+</html>

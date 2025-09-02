@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Healthcare Cybersecurity Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <header>
+    <h1>Cybersecurity Dashboard</h1>
+  </header>
+
+  <main>
+    <section class="cards">
+      <div class="card">
+        <h2>Active Threats</h2>
+        <p id="threatCount">0</p>
+      </div>
+      <div class="card">
+        <h2>Phishing Attempts</h2>
+        <p id="phishingCount">0</p>
+      </div>
+      <div class="card">
+        <h2>Compliance Score</h2>
+        <p id="compliance">92%</p>
+      </div>
+    </section>
+
+    <section class="charts">
+      <canvas id="attackChart"></canvas>
+      <canvas id="trafficChart"></canvas>
+    </section>
+
+    <section class="alerts">
+      <h2>Real-time Alerts</h2>
+      <ul id="alertList"></ul>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
