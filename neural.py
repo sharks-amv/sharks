@@ -1,9 +1,10 @@
 import sympy as s
-import mathplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 
 #define relu
 xs,w1s,w2s,ts=s.symbols("x w1 w2 t")
-h=s.Max(0,w1s*xs)
+alpha = 0.01
+h = s.Piecewise((w1s*xs, w1s*xs > 0), (alpha*w1s*xs, True))
 y=w2s*h
 l=(ts-y)**2
 
@@ -13,15 +14,18 @@ d2=s.diff(l,w2s)
 
 #define basic nn(x=input,w1=weigt1,w2=weight2,lr=learning rate,t=target)
 
-def nn(x,w1,w2,lr,t,epoch=1000):
+def nn(x,w1,w2,lr,t,epoch=200,alpha=0.01,p=20):
     a=[]
 
     pr=float("inf")
 
-    for _ in range(epoch):
-        #forward pass
+    pc=0  #patiance counter
 
-        h=max(0,w1*x)    #hidden layer
+    for i in range(epoch):
+        #forward pass
+        z=w1*x
+
+        h=z if z>0 else alpha*z    #hidden layer
 
         y=w2*h     #output layer
 
@@ -29,22 +33,27 @@ def nn(x,w1,w2,lr,t,epoch=1000):
         #backpropogation
         a1=float(d1.subs({xs:x,w1s:w1,w2s:w2,ts:t}))
         a2=float(d2.subs({xs:x,w1s:w1,w2s:w2,ts:t}))
-        a.append([epoch,w1,w2,lr,h,y,l])
+        a.append([i,w1,w2,lr,h,y,l])
         w1=w1-(lr*a1)
         w2=w2-(lr*a2)
         #stop coditon
         if l < 1e-6:
             break
         #dynamic learning rate adjusment
-        if l< pr:
-            lr *= 1.05   # reward good step
+        if l  < pr-1e-9:
+            lr *= 1.02
+            pc=0  # reward good step
         else:
-            lr *= 0.7    # punish overshoot
+            lr *= 0.5 
+            pc+=1    # punish overshoot
 
         # clip learning rate to safe range
         lr= max(min(lr, 1.0), 1e-6)
 
         pr=l
+        if pc>=p:
+            print(f"Early stopping at epoch{i} (patiance reached)")
+            break
 
     return a
 
@@ -60,7 +69,7 @@ print(f"{'epoch':<6} {'w1':<10} {'w2':<10} {'lr':<10} {'h':<10} {'y':<10} {'loss
 for row in a:
     print(f"{row[0]:<6} {row[1]:<10.4f} {row[2]:<10.4f} {row[3]:<10.4f} {row[4]:<10.4f} {row[5]:<10.4f} {row[6]:<10.6f}")
 
-# --- Plot evolution ---
+#  Plot evolution 
 epochs = [r[0] for r in a]
 w1_vals = [r[1] for r in a]
 w2_vals = [r[2] for r in a]
