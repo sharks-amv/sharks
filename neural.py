@@ -69,7 +69,7 @@ print(f"{'epoch':<6} {'w1':<10} {'w2':<10} {'lr':<10} {'h':<10} {'y':<10} {'loss
 for row in a:
     print(f"{row[0]:<6} {row[1]:<10.4f} {row[2]:<10.4f} {row[3]:<10.4f} {row[4]:<10.4f} {row[5]:<10.4f} {row[6]:<10.6f}")
 
-#  Plot evolution 
+#  Plot evolution
 epochs = [r[0] for r in a]
 w1_vals = [r[1] for r in a]
 w2_vals = [r[2] for r in a]
@@ -100,7 +100,7 @@ plt.subplot(2,2,4)
 plt.plot(epochs, loss_vals, label="Loss", color="red")
 plt.xlabel("Epoch")
 plt.ylabel("Loss")
-plt.yscale("log")  # log scale for better view
+plt.yscale("log") 
 plt.legend()
 
 plt.tight_layout()
